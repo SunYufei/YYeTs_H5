@@ -1,16 +1,20 @@
 package io.github.sunyufei.yyets
 
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         private val URL: String = "http://m.zimuzu.tv/index.html"
+        private val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.xml"
     }
 
     private lateinit var webView: WebView
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
+        getLatestVersion()
     }
 
     override fun onBackPressed() {
@@ -50,5 +55,28 @@ class MainActivity : AppCompatActivity() {
             true -> webView.goBack()
             false -> super.onBackPressed()
         }
+    }
+
+    private fun getVersionName(): String {
+        val packageManager = this@MainActivity.packageManager
+        var versionName = ""
+        try {
+            val packageInfo = packageManager.getPackageInfo(this.packageName, 0)
+            versionName = packageInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return versionName
+    }
+
+    private fun getLatestVersion(): String {
+        // val doc: Document = Jsoup.connect(VERSION_URL).get()
+        return ""
+    }
+
+    private fun canUpdate(): Boolean {
+        val currentVersion = getVersionName()
+        val latestVersion = getLatestVersion()
+        return false
     }
 }
