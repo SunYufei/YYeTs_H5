@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getLatestVersion(): String {
-        // val doc: Document = Jsoup.connect(VERSION_URL).get()
+        val doc: Document = Jsoup.connect(VERSION_URL).get()
         return ""
     }
 
