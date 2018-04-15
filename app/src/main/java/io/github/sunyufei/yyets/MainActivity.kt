@@ -6,15 +6,13 @@ import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         private val URL: String = "http://m.zimuzu.tv/index.html"
-        private val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.xml"
+        private val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.txt"
     }
 
     private lateinit var webView: WebView
@@ -70,13 +68,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getLatestVersion(): String {
-        val doc: Document = Jsoup.connect(VERSION_URL).get()
-        return ""
+        return "0"
     }
 
     private fun canUpdate(): Boolean {
         val currentVersion = getVersionName()
         val latestVersion = getLatestVersion()
+        if (latestVersion == "0")
+            return false
         return false
     }
 }
