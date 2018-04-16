@@ -6,13 +6,16 @@ import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import java.net.URL
+import kotlin.math.min
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private val URL: String = "http://m.zimuzu.tv/index.html"
-        private val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.txt"
+        private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
+        private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.txt"
+        private const val APK_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/app/release/YYeTs_Latest.apk"
     }
 
     private lateinit var webView: WebView
@@ -35,17 +38,17 @@ class MainActivity : AppCompatActivity() {
         settings.loadsImagesAutomatically = true
         settings.useWideViewPort = true
 
-        webView.loadUrl(URL)
+        webView.loadUrl(INDEX_URL)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url!!.indexOf("m.zimuzu.tv") > 0)
                     webView.loadUrl(url)
                 else
-                    Toast.makeText(this@MainActivity, "广告页面，不会打开", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "广告页面，不会跳转", Toast.LENGTH_SHORT).show()
                 return true
             }
         }
-        getLatestVersion()
+        checkUpdate()
     }
 
     override fun onBackPressed() {
@@ -55,27 +58,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getVersionName(): String {
+    private fun checkUpdate() {
+        var currentVersion = "0"
         val packageManager = this@MainActivity.packageManager
-        var versionName = ""
         try {
             val packageInfo = packageManager.getPackageInfo(this.packageName, 0)
-            versionName = packageInfo.versionName
+            currentVersion = packageInfo.versionName
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        return versionName
-    }
 
-    private fun getLatestVersion(): String {
-        return "0"
-    }
+        val thread = object : Thread() {
+            override fun run() {
+                val url = URL(VERSION_URL)
+                val latestVersion = url.readText()
+                if (canUpdate(currentVersion, latestVersion)) {
 
-    private fun canUpdate(): Boolean {
-        val currentVersion = getVersionName()
-        val latestVersion = getLatestVersion()
-        if (latestVersion == "0")
-            return false
-        return false
+                }
+            }
+
+            private fun canUpdate(current: String, latest: String): Boolean {
+                if (current == "0" || latest == "0")
+                    return false
+                else {
+                    val currentList = current.split(".")
+                    val latestList = latest.split(".")
+                    val index = min(currentList.size, latestList.size) - 1
+                    for (i in 0..index) {
+                        if (latestList[i] > currentList[i])
+                            return true
+                        else if (latestList[i] < currentList[i])
+                            return false
+                    }
+                    if (latestList.size > index)
+                        return true
+                    return false
+                }
+            }
+        }
+        thread.start()
     }
 }
