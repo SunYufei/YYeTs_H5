@@ -10,8 +10,8 @@ android {
         applicationId "io.github.sunyufei.yyets"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.6"
+        versionCode 66
+        versionName "1.6.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
