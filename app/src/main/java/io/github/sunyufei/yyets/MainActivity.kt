@@ -1,22 +1,17 @@
 package io.github.sunyufei.yyets
 
-import android.content.DialogInterface
-import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import java.net.URL
-import kotlin.math.min
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
-        private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.json"
+        private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.txt"
     }
 
     private lateinit var webView: WebView
@@ -49,7 +44,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
-        checkUpdate()
     }
 
     override fun onBackPressed() {
@@ -57,52 +51,5 @@ class MainActivity : AppCompatActivity() {
             true -> webView.goBack()
             false -> super.onBackPressed()
         }
-    }
-
-    private fun checkUpdate() {
-        var currentVersion = "0"
-        val packageManager = this@MainActivity.packageManager
-        try {
-            val packageInfo = packageManager.getPackageInfo(this.packageName, 0)
-            currentVersion = packageInfo.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-
-        val thread = object : Thread() {
-            override fun run() {
-                val url = URL(VERSION_URL)
-                val latestVersion = url.readText()
-                if (canUpdate(currentVersion, latestVersion)) {
-                    val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setMessage("检测到新版本，是否下载安装？")
-                    builder.setTitle("更新提示")
-                    builder.setPositiveButton("更新", null)
-                    builder.setNeutralButton("取消", null)
-                    builder.create()
-                    builder.show()
-                }
-            }
-
-            private fun canUpdate(current: String, latest: String): Boolean {
-                if (current == "0" || latest == "0")
-                    return false
-                else {
-                    val currentList = current.split(".")
-                    val latestList = latest.split(".")
-                    val index = min(currentList.size, latestList.size) - 1
-                    for (i in 0..index) {
-                        if (latestList[i] > currentList[i])
-                            return true
-                        else if (latestList[i] < currentList[i])
-                            return false
-                    }
-                    if (latestList.size > index)
-                        return true
-                    return false
-                }
-            }
-        }
-        thread.start()
     }
 }
