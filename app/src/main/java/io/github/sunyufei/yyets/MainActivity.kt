@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
-        private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.txt"
     }
 
     private lateinit var webView: WebView
