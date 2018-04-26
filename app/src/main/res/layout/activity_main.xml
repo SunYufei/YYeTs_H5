@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <WebView
+    <com.tencent.smtt.sdk.WebView
         android:id="@+id/WebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
