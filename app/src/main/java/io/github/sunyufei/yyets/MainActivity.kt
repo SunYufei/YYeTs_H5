@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
                 //To change body of created functions use File | Settings | File Templates.
             }
         }
-
         QbSdk.initX5Environment(applicationContext, cb)
 
         setContentView(R.layout.activity_main)
@@ -52,10 +51,11 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(INDEX_URL)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                if (webView.url == INDEX_URL && request!!.url.toString().indexOf("m.zimuzu.tv") < 0)
+                val url = request!!.url.toString()
+                if (webView.url == INDEX_URL && url.indexOf("m.zimuzu.tv") < 0)
                     Toast.makeText(this@MainActivity, "广告页面，不会跳转", Toast.LENGTH_SHORT).show()
                 else
-                    webView.loadUrl(request!!.url.toString())
+                    webView.loadUrl(url)
                 return true
             }
         }
