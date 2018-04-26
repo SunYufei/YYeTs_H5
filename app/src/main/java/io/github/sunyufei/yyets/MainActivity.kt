@@ -3,7 +3,6 @@ package io.github.sunyufei.yyets
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest
 import com.tencent.smtt.sdk.*
 
 
@@ -21,13 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val cb = object : QbSdk.PreInitCallback {
-            override fun onViewInitFinished(p0: Boolean) {
-                //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onCoreInitFinished() {
-                //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun onCoreInitFinished() {}
+            override fun onViewInitFinished(p0: Boolean) {}
         }
         QbSdk.initX5Environment(applicationContext, cb)
 
@@ -50,9 +44,8 @@ class MainActivity : AppCompatActivity() {
 
         webView.loadUrl(INDEX_URL)
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val url = request!!.url.toString()
-                if (webView.url == INDEX_URL && url.indexOf("m.zimuzu.tv") < 0)
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                if (webView.url == INDEX_URL && url!!.indexOf("m.zimuzu.tv") < 0)
                     Toast.makeText(this@MainActivity, "广告页面，不会跳转", Toast.LENGTH_SHORT).show()
                 else
                     webView.loadUrl(url)
