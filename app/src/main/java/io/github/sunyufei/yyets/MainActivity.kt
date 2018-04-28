@@ -3,10 +3,12 @@ package io.github.sunyufei.yyets
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import com.tencent.smtt.sdk.*
 import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.uiThread
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 
@@ -90,18 +92,26 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        var latestVersion = 0
-        var content: Array<String>
-        async() {
+        var latestVersion: Int
+        var content: String
+        async {
             val latestString = URL(VERSION_URL).readText()
             val jsonObject = JSONObject(latestString)
 
             uiThread {
                 latestVersion = jsonObject.optInt("versionCode")
+                if (latestVersion > currentVersion) {
+                    content = jsonObject.optString("content")
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    builder.setTitle("发现新版本")
+                    builder.setMessage(content)
+                    builder.setPositiveButton("更新", null)
+                    builder.setNegativeButton("取消", null)
+                    builder.show()
+                }
             }
         }
 
-        println(latestVersion)
 
     }
 }
