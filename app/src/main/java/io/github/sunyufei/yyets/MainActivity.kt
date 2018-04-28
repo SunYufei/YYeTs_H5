@@ -1,5 +1,6 @@
 package io.github.sunyufei.yyets
 
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -10,6 +11,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
+        private const val VERSION_URL: String = ""
     }
 
     private lateinit var webView: WebView
@@ -54,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {}
+
+        checkUpdate()
     }
 
     override fun onBackPressed() {
@@ -72,5 +76,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun checkUpdate() {
+        var currentCode = 0
+        try {
+            currentCode = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+
+
     }
 }
