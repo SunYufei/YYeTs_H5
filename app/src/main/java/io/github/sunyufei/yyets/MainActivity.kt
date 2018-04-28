@@ -5,13 +5,17 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.tencent.smtt.sdk.*
+import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.uiThread
+import org.json.JSONObject
+import java.net.URL
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
-        private const val VERSION_URL: String = ""
+        private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.json"
     }
 
     private lateinit var webView: WebView
@@ -79,13 +83,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUpdate() {
-        var currentCode = 0
+        var currentVersion = 0
         try {
-            currentCode = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode
+            currentVersion = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
 
+        var latestVersion = 0
+        var content: Array<String>
+        async() {
+            val latestString = URL(VERSION_URL).readText()
+            val jsonObject = JSONObject(latestString)
+
+            uiThread {
+                latestVersion = jsonObject.optInt("versionCode")
+            }
+        }
+
+        println(latestVersion)
 
     }
 }
