@@ -10,8 +10,8 @@ android {
         applicationId "io.github.sunyufei.yyets"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 180426
-        versionName "1.7"
+        versionCode 180428
+        versionName "1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "armeabi", "armeabi-v7a"

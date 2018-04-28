@@ -8,7 +8,6 @@ import android.widget.Toast
 import com.tencent.smtt.sdk.*
 import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.uiThread
-import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 
@@ -18,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
         private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.json"
+        private const val APK_URL: String = ""
     }
 
     private lateinit var webView: WebView
@@ -111,7 +111,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
 }
