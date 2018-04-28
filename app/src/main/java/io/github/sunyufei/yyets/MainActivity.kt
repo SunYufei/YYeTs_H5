@@ -1,6 +1,9 @@
 package io.github.sunyufei.yyets
 
+import android.app.DownloadManager
+import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -17,10 +20,11 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
         private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.json"
-        private const val APK_URL: String = ""
+        private const val APK_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/app/release/YYeTs_Latest.apk"
     }
 
     private lateinit var webView: WebView
+    private lateinit var broadcastRecever: BroadcastReceiver
 
     private var backPressed: Boolean = false
 
@@ -85,31 +89,63 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUpdate() {
-        var currentVersion = 0
+        var currentVCode = 0
+        var currentVName = ""
         try {
-            currentVersion = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode
+            currentVCode = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode
+            currentVName = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionName
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
 
-        var latestVersion: Int
+        var latestVCode: Int
+        var latestVName: String
         var content: String
         async {
             val latestString = URL(VERSION_URL).readText()
             val jsonObject = JSONObject(latestString)
 
             uiThread {
-                latestVersion = jsonObject.optInt("versionCode")
-                if (latestVersion > currentVersion) {
+                latestVCode = jsonObject.optInt("versionCode")
+                latestVName = jsonObject.optString("versionName")
+                if (latestVCode > currentVCode) {
                     content = jsonObject.optString("content")
                     val builder = AlertDialog.Builder(this@MainActivity)
                     builder.setTitle("发现新版本")
-                    builder.setMessage(content)
-                    builder.setPositiveButton("更新", null)
+                    builder.setMessage("最新版本：" + latestVName + "\n当前版本：" + currentVName + "\n更新内容：\n" + content)
+                    builder.setPositiveButton("更新", DialogInterface.OnClickListener { _, _ ->
+                        val request = DownloadManager.Request(Uri.parse(APK_URL))
+                        request.setDestinationInExternalPublicDir("/download/", "yyets.apk")
+                        request.setTitle("人人影视H5")
+                        request.setDescription("正在下载新版本")
+                        val downloadManager = this@MainActivity.getSystemService(android.content.Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val id = downloadManager.enqueue(request)
+
+                        val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+                        broadcastRecever = object : BroadcastReceiver() {
+                            override fun onReceive(context: Context?, intent: Intent?) {
+                                val intentID = intent!!.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                                if (intentID == id) {
+                                    val intentAPK = Intent()
+                                    intentAPK.action = Intent.ACTION_VIEW
+                                    val uriAPK = Uri.parse("file:///download/yyets.apk")
+                                    intentAPK.setDataAndType(uriAPK, "application/vnd.android.package-archive")
+                                    intentAPK.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    this@MainActivity.startActivity(intentAPK)
+                                }
+                            }
+                        }
+                        registerReceiver(broadcastRecever, intentFilter)
+                    })
                     builder.setNegativeButton("取消", null)
                     builder.show()
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastRecever)
     }
 }
