@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import com.tencent.smtt.sdk.*
@@ -21,10 +22,12 @@ class MainActivity : AppCompatActivity() {
         private const val INDEX_URL: String = "http://m.zimuzu.tv/index.html"
         private const val VERSION_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/VERSION.json"
         private const val APK_URL: String = "https://gitee.com/sunovo/YYeTs_H5/raw/master/app/release/YYeTs_Latest.apk"
+        private const val DOWNLOAD_PATH: String = "/Download/"
+        private const val APK_NAME: String = "yyets_h5.apk"
     }
 
     private lateinit var webView: WebView
-    private lateinit var broadcastRecever: BroadcastReceiver
+    private lateinit var broadcastReceiver: BroadcastReceiver
 
     private var backPressed: Boolean = false
 
@@ -112,30 +115,29 @@ class MainActivity : AppCompatActivity() {
                     content = jsonObject.optString("content")
                     val builder = AlertDialog.Builder(this@MainActivity)
                     builder.setTitle("发现新版本")
-                    builder.setMessage("最新版本：" + latestVName + "\n当前版本：" + currentVName + "\n更新内容：\n" + content)
+                    builder.setMessage("最新版本：" + latestVName + "\n当前版本：" + currentVName + "\n\n更新内容：\n" + content)
                     builder.setPositiveButton("更新", DialogInterface.OnClickListener { _, _ ->
                         val request = DownloadManager.Request(Uri.parse(APK_URL))
-                        request.setDestinationInExternalPublicDir("/download/", "yyets.apk")
+                        request.setDestinationInExternalPublicDir(DOWNLOAD_PATH, APK_NAME)
                         request.setTitle("人人影视H5")
                         request.setDescription("正在下载新版本")
                         val downloadManager = this@MainActivity.getSystemService(android.content.Context.DOWNLOAD_SERVICE) as DownloadManager
                         val id = downloadManager.enqueue(request)
 
                         val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-                        broadcastRecever = object : BroadcastReceiver() {
+                        broadcastReceiver = object : BroadcastReceiver() {
                             override fun onReceive(context: Context?, intent: Intent?) {
                                 val intentID = intent!!.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                                 if (intentID == id) {
-                                    val intentAPK = Intent()
-                                    intentAPK.action = Intent.ACTION_VIEW
-                                    val uriAPK = Uri.parse("file:///download/yyets.apk")
-                                    intentAPK.setDataAndType(uriAPK, "application/vnd.android.package-archive")
+                                    val intentAPK = Intent(Intent.ACTION_VIEW)
                                     intentAPK.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    val uri = Uri.parse("file://" + Environment.getExternalStorageDirectory().toString() + DOWNLOAD_PATH + APK_NAME)
+                                    intentAPK.setDataAndType(uri, "application/vnd.android.package-archive")
                                     this@MainActivity.startActivity(intentAPK)
                                 }
                             }
                         }
-                        registerReceiver(broadcastRecever, intentFilter)
+                        registerReceiver(broadcastReceiver, intentFilter)
                     })
                     builder.setNegativeButton("取消", null)
                     builder.show()
@@ -146,6 +148,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(broadcastRecever)
+        try {
+            unregisterReceiver(broadcastReceiver)
+        } catch (e: UninitializedPropertyAccessException) {
+            e.printStackTrace()
+        }
     }
 }
