@@ -45,30 +45,34 @@ class MainActivity : AppCompatActivity() {
 
         webView = findViewById(R.id.WebView)
 
-        webView.settings.run {
-            allowFileAccess = true
-            cacheMode = WebSettings.LOAD_DEFAULT
-            defaultTextEncodingName = "UTF-8"
-            domStorageEnabled = true
-            javaScriptEnabled = true
-            javaScriptCanOpenWindowsAutomatically = true
-            loadWithOverviewMode = true
-            loadsImagesAutomatically = true
-            useWideViewPort = true
-        }
+        webView.run {
 
-        webView.loadUrl(INDEX_URL)
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                if (webView.url == INDEX_URL && url!!.indexOf("m.zimuzu.tv") < 0)
-                    toast("广告页面，不会跳转")
-                else
-                    webView.loadUrl(url)
-                return true
+            settings.run {
+                allowFileAccess = true
+                cacheMode = WebSettings.LOAD_DEFAULT
+                defaultTextEncodingName = "UTF-8"
+                domStorageEnabled = true
+                javaScriptEnabled = true
+                javaScriptCanOpenWindowsAutomatically = true
+                loadWithOverviewMode = true
+                loadsImagesAutomatically = true
+                useWideViewPort = true
             }
-        }
 
-        webView.webChromeClient = object : WebChromeClient() {}
+            loadUrl(INDEX_URL)
+
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    if (webView.url == INDEX_URL && url!!.indexOf("m.zimuzu.tv") < 0)
+                        toast("广告页面，不会跳转")
+                    else
+                        webView.loadUrl(url)
+                    return true
+                }
+            }
+
+            webChromeClient = object : WebChromeClient() {}
+        }
 
         // checkUpdate()
     }
