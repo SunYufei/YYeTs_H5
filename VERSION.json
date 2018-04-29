@@ -1,5 +1,5 @@
 {
-  "versionCode": 180428,
-  "versionName": "1.8",
-  "content": "1.添加自动更新功能\n2.细节优化"
+  "versionCode": 180429,
+  "versionName": "1.8.1",
+  "content": "1.仅WiFi连接时检查更新\n2.稳定性优化"
 }
