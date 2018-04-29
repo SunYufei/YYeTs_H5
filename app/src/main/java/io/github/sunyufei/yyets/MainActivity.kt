@@ -1,8 +1,5 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.sunyufei.yyets
 
-import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -23,7 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     private var backPressed: Boolean = false
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
