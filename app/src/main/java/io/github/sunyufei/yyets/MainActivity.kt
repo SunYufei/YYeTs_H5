@@ -39,13 +39,13 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.hide()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val permission = ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             val storage = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this@MainActivity, storage, 1)
             }
-        }
+        } */
 
         webView = findViewById(R.id.WebView)
 
