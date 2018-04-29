@@ -61,34 +61,36 @@ class Update(private val context: Context,
         updateMessage += content
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("发现新版本")
-        builder.setMessage(updateMessage)
-        builder.setPositiveButton("更新") { dialog: DialogInterface?, _ ->
-            val request = DownloadManager.Request(Uri.parse(apkUrl))
-            request.setDestinationInExternalPublicDir(downloadPath, apkName)
-            // request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-            request.setTitle(context.packageName)
-            request.setDescription("正在下载新版本")
-            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val id = downloadManager.enqueue(request)
+        builder.run {
+            setTitle("发现新版本")
+            setMessage(updateMessage)
+            setPositiveButton("更新") { dialog: DialogInterface?, _ ->
+                val request = DownloadManager.Request(Uri.parse(apkUrl))
+                request.setDestinationInExternalPublicDir(downloadPath, apkName)
+                // request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
+                request.setTitle(context.packageName)
+                request.setDescription("正在下载新版本")
+                val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val id = downloadManager.enqueue(request)
 
-            val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-            broadcastReceiver = object : BroadcastReceiver() {
-                override fun onReceive(context: Context?, intent: Intent?) {
-                    val intentID = intent!!.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                    if (intentID == id) {
-                        val intentAPK = Intent(Intent.ACTION_VIEW)
-                        intentAPK.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        val uri = Uri.parse("file://" + Environment.getExternalStorageDirectory().toString() + downloadPath + apkName)
-                        intentAPK.setDataAndType(uri, "application/vnd.android.package-archive")
-                        context!!.startActivity(intentAPK)
+                val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+                broadcastReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {
+                        val intentID = intent!!.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (intentID == id) {
+                            val intentAPK = Intent(Intent.ACTION_VIEW)
+                            intentAPK.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            val uri = Uri.parse("file://" + Environment.getExternalStorageDirectory().toString() + downloadPath + apkName)
+                            intentAPK.setDataAndType(uri, "application/vnd.android.package-archive")
+                            context!!.startActivity(intentAPK)
+                        }
                     }
                 }
+                context.registerReceiver(broadcastReceiver, intentFilter)
+                dialog!!.dismiss()
             }
-            context.registerReceiver(broadcastReceiver, intentFilter)
-            dialog!!.dismiss()
+            setNegativeButton("取消", null)
+            show()
         }
-        builder.setNegativeButton("取消", null)
-        builder.show()
     }
 }
