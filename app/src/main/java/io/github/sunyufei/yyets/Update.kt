@@ -55,7 +55,7 @@ class Update(private val context: Context,
     private fun update() {
         var updateMessage = "最新版本："
         updateMessage += latestVName
-        updateMessage += "\n当前版本"
+        updateMessage += "\n当前版本："
         updateMessage += currentVName
         updateMessage += "\n\n更新内容：\n"
         updateMessage += content
