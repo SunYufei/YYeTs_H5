@@ -2,8 +2,8 @@ package io.github.sunyufei.yyets
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import com.tencent.smtt.sdk.*
+import org.jetbrains.anko.toast
 
 
 class MainActivity : AppCompatActivity() {
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (webView.url == INDEX_URL && url!!.indexOf("m.zimuzu.tv") < 0)
-                    Toast.makeText(this@MainActivity, "广告页面，不会跳转", Toast.LENGTH_SHORT).show()
+                    toast("广告页面，不会跳转")
                 else
                     webView.loadUrl(url)
                 return true
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     true -> super.onBackPressed()
                     false -> {
                         backPressed = true
-                        Toast.makeText(this@MainActivity, "再按一次退出", Toast.LENGTH_SHORT).show()
+                        toast("再按一次退出")
                     }
                 }
             }
