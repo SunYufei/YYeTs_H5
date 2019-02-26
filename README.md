@@ -1,5 +1,7 @@
 # 人人影视H5
 
+> 由于人人影视H5版网页的关闭，此APP不再可以正常运行，最近无更新计划
+
 ## 简介
 
 使用Tencent X5 WebView加载[人人影视H5](http://m.zimuzu.tv/index.html)版网页，网页中的所有内容版权归人人影视所有。
